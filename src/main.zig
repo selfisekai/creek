@@ -112,16 +112,13 @@ pub fn usage() noreturn {
     process.exit(1);
 }
 
-pub fn main() anyerror!void {
-    var gpa: heap.GeneralPurposeAllocator(.{}) = .{};
-    defer _ = gpa.deinit();
-
+pub fn main(init: process.Init) anyerror!void {
     _ = fcft.init(.auto, false, .warning);
     if (fcft.capabilities() & fcft.Capabilities.text_run_shaping == 0) {
         @panic("Support for text run shaping required in fcft and not present");
     }
 
-    state.gpa = gpa.allocator();
+    state.gpa = init.gpa;
     state.wayland = try Wayland.init();
     state.loop = try Loop.init();
     state.config = parseFlags(os.argv[1..]) catch |err| {

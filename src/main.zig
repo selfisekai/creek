@@ -1,6 +1,6 @@
 const std = @import("std");
 const heap = std.heap;
-const io = std.io;
+const Io = std.Io;
 const log = std.log;
 const mem = std.mem;
 const posix = std.posix;
@@ -25,6 +25,7 @@ pub const Config = struct {
 };
 
 pub const State = struct {
+    io: Io,
     gpa: mem.Allocator,
     config: Config,
     wayland: Wayland,
@@ -101,7 +102,7 @@ pub fn usage() noreturn {
     ;
 
     var buffer: [1024]u8 = undefined;
-    var serr = std.fs.File.stderr().writer(&buffer);
+    var serr = Io.File.stderr().writer(state.io, &buffer);
     serr.interface.writeAll(desc) catch |err| {
         std.debug.panic("{s}", .{@errorName(err)});
     };
@@ -118,6 +119,7 @@ pub fn main(init: process.Init) anyerror!void {
         @panic("Support for text run shaping required in fcft and not present");
     }
 
+    state.io = init.io;
     state.gpa = init.gpa;
     state.wayland = try Wayland.init();
     state.loop = try Loop.init();

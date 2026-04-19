@@ -58,8 +58,8 @@ fn parseColorFlag(flg: ?[]const u8, def: []const u8) !pixman.Color {
     }
 }
 
-fn parseFlags(args: [][*:0]u8) !Config {
-    const result = flags.parser([*:0]const u8, &.{
+fn parseFlags(args: []const [:0]const u8) !Config {
+    const result = flags.parser([:0]const u8, &.{
         .{ .name = "hg", .kind = .arg }, // height
         .{ .name = "fn", .kind = .arg }, // font name
         .{ .name = "nf", .kind = .arg }, // normal foreground
@@ -121,7 +121,8 @@ pub fn main(init: process.Init) anyerror!void {
     state.gpa = init.gpa;
     state.wayland = try Wayland.init();
     state.loop = try Loop.init();
-    state.config = parseFlags(os.argv[1..]) catch |err| {
+    var args = try init.minimal.args.toSlice(state.gpa);
+    state.config = parseFlags(args[1..]) catch |err| {
         log.err("Option parsing failed with: {s}", .{@errorName(err)});
         usage();
     };

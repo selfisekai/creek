@@ -132,14 +132,12 @@ fn unfocusedOutput(self: *Seat, output: *wl.Output) void {
     if (monitor) |m| {
         if (m.confBar()) |bar| {
             render.resetText(bar) catch |err| {
-                log.err("resetText failed for monitor {}: {s}",
-                    .{bar.monitor.globalName, @errorName(err)});
+                log.err("resetText failed for monitor {}: {s}", .{ bar.monitor.globalName, @errorName(err) });
             };
             bar.text.surface.commit();
 
             render.renderTitle(bar, null) catch |err| {
-                log.err("renderTitle failed on unfocus for monitor {}: {s}",
-                    .{bar.monitor.globalName, @errorName(err)});
+                log.err("renderTitle failed on unfocus for monitor {}: {s}", .{ bar.monitor.globalName, @errorName(err) });
                 return;
             };
 
@@ -157,8 +155,7 @@ fn focusedView(self: *Seat, title: [*:0]const u8) void {
     self.updateTitle(title);
     if (self.focusedBar()) |bar| {
         render.renderTitle(bar, self.window_title) catch |err| {
-            log.err("renderTitle failed on focused view for monitor {}: {s}",
-                .{bar.monitor.globalName, @errorName(err)});
+            log.err("renderTitle failed on focused view for monitor {}: {s}", .{ bar.monitor.globalName, @errorName(err) });
             return;
         };
 
